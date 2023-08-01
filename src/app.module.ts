@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,6 +6,10 @@ import { User } from './entities/users.entities';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModeul } from './module/users.module';
 import { AuthModeul } from './module/auth.moule';
+import { AuthMiddleware } from './middelware/auth.middlewrare';
+import { UserController } from './controllers/users.controller';
+import { TodoController } from './controllers/todos.controller';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -41,6 +45,10 @@ import { AuthModeul } from './module/auth.moule';
     AuthModeul,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, JwtService],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(AuthMiddleware).forRoutes(UserController, TodoController);
+  }
+}

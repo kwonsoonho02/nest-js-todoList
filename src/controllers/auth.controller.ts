@@ -37,7 +37,10 @@ export class AuthController {
       const userSignIn = await this.authService.signIn(userData);
 
       res.setHeader('Authorization', 'Bearer ' + userSignIn.accessToken);
-
+      res.cookie('jwt', userSignIn.accessToken, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, //1 day
+      });
       return res.json({ data: userSignIn, msg: 'signin', userSignIn });
     } catch (error) {
       console.log(error);
@@ -46,4 +49,10 @@ export class AuthController {
 
   @Post()
   async signOut() {}
+
+  @Get('/cookies')
+  getCookies(@Req() req: Request, @Res() res: Response): any {
+    const jwt = req.cookies['jwt'];
+    return console.log(jwt);
+  }
 }

@@ -8,6 +8,8 @@ export class AuthMiddleware implements NestMiddleware {
 
   use(req: Request, res: Response, next: NextFunction) {
     try {
+      const authHeader = req.headers['authorization'];
+      console.log('헤더 : ', authHeader);
       next();
     } catch (error) {}
   }

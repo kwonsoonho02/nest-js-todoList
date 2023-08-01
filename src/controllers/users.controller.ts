@@ -14,7 +14,7 @@ import { User } from 'src/entities/users.entities';
 import { UserService } from 'src/services/users.services';
 import { Request, Response } from 'express';
 @Controller('users')
-export class UserControlloer {
+export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
