@@ -5,7 +5,10 @@ import { Column, Model, Table } from 'sequelize-typescript';
   modelName: 'User',
 })
 export class User extends Model {
-  @Column
+  @Column({ primaryKey: true })
+  id: number;
+
+  @Column({ unique: true })
   userId: string;
 
   @Column

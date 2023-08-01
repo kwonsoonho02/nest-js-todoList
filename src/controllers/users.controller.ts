@@ -18,9 +18,13 @@ export class UserControlloer {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAllUserList(@Req() req: Request, @Res() res: Response) {
+  async findAllUserList(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Body() userData,
+  ) {
     try {
-      const findUserId = await this.userService.findAllUserList();
+      const findUserId: User[] = await this.userService.findUser(userData);
       res.status(200).json({ data: findUserId, msg: 'findAll' });
     } catch (error) {
       return console.log(error);
@@ -34,7 +38,7 @@ export class UserControlloer {
     @Body() userData,
   ) {
     try {
-      const createUser = await this.userService.createUser(userData);
+      const createUser: User = await this.userService.createUser(userData);
 
       res.status(201).json({ data: createUser, msg: 'create' });
     } catch (error) {
@@ -50,7 +54,10 @@ export class UserControlloer {
     @Body() userData,
   ) {
     try {
-      const updateUser = await this.userService.updateUser(id, userData);
+      const updateUser: number = await this.userService.updateUser(
+        id,
+        userData,
+      );
       res.status(200).json({ data: updateUser, msg: 'update' });
     } catch (error) {}
   }
@@ -62,7 +69,7 @@ export class UserControlloer {
     @Param('id') id: number,
   ) {
     try {
-      const deleteUser = await this.userService.deleteUser(id);
+      const deleteUser: number = await this.userService.deleteUser(id);
       res.status(200).json({ data: deleteUser, msg: 'delete' });
     } catch (error) {}
   }
