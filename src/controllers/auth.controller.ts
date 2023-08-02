@@ -25,34 +25,36 @@ export class AuthController {
       const signUp: User = await this.authService.signUp(userData);
 
       res.status(200).json({ data: signUp, msg: 'create' });
-      res;
     } catch (error) {
       console.log(error);
     }
   }
 
   @Post('/signin')
-  async signIn(@Res() res: Response, @Body() userData: CreateUserDTO) {
+  async signIn(
+    @Res() res: Response,
+    @Body() userData: CreateUserDTO,
+  ): Promise<object> {
     try {
       const userSignIn = await this.authService.signIn(userData);
 
-      res.setHeader('Authorization', 'Bearer ' + userSignIn.accessToken);
       res.cookie('jwt', userSignIn.accessToken, {
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, //1 day
+        maxAge: 24 * 60 * 60 * 1000,
       });
-      return res.json({ data: userSignIn, msg: 'signin', userSignIn });
+
+      return res.json({ data: userSignIn, msg: 'signin' });
     } catch (error) {
       console.log(error);
     }
   }
 
-  @Post()
-  async signOut() {}
-
-  @Get('/cookies')
-  getCookies(@Req() req: Request, @Res() res: Response): any {
-    const jwt = req.cookies['jwt'];
-    return console.log(jwt);
+  @Post('/signout')
+  async signOut(@Res() res: Response, @Body() userData: CreateUserDTO) {
+    try {
+      const deleteToken = await this.authService.signOut(userData);
+      res.clearCookie('jwt');
+      res.status(200).json({ data: deleteToken, message: 'logout' });
+    } catch (error) {}
   }
 }

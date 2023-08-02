@@ -7,9 +7,15 @@ export class AuthMiddleware implements NestMiddleware {
   constructor(private readonly jwtService: JwtService) {}
 
   use(req: Request, res: Response, next: NextFunction) {
+    const cookies = req.cookies['Authorization'];
+    console.log(req);
+    if (!cookies || !cookies.startsWith('Bearer '))
+      return res.status(401).json({ message: 'Unauthorized' });
+
+    const token = cookies.split(' ')[1];
     try {
-      const authHeader = req.headers['authorization'];
-      console.log('헤더 : ', authHeader);
+      const payload = this.jwtService.verify(token);
+      req['users'] = payload;
       next();
     } catch (error) {}
   }
