@@ -4,12 +4,13 @@ import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { User } from './entities/users.entities';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { UserModeul } from './module/users.module';
-import { AuthModeul } from './module/auth.moule';
+import { UserModule } from './module/users.module';
+import { AuthModule } from './module/auth.module';
 import { AuthMiddleware } from './middelware/auth.middlewrare';
 import { UserController } from './controllers/users.controller';
 import { TodoController } from './controllers/todos.controller';
 import { JwtService } from '@nestjs/jwt';
+import { TodoModule } from './module/todos.module';
 
 @Module({
   imports: [
@@ -41,8 +42,9 @@ import { JwtService } from '@nestjs/jwt';
       },
       inject: [ConfigService],
     }),
-    UserModeul,
-    AuthModeul,
+    AuthModule,
+    UserModule,
+    TodoModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtService],
