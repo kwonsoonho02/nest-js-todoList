@@ -16,7 +16,6 @@ export class UserService {
     // const user = await this.userModel.findAll({
     //   where: { id: userData.id },
     // });
-    console.log(user);
     return user;
   }
   async createUser(userData: CreateUserDTO): Promise<User> {
@@ -33,7 +32,7 @@ export class UserService {
     });
   }
 
-  async updateUser(id: string, userData: CreateUserDTO): Promise<number> {
+  async updateUser(id: number, userData: CreateUserDTO): Promise<number> {
     const findUser = await this.userModel.findByPk(id);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
@@ -45,7 +44,7 @@ export class UserService {
     return affectCount;
   }
 
-  async deleteUser(id: number) {
+  async deleteUser(id: number): Promise<number> {
     const findUser = await this.userModel.findByPk(id);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 

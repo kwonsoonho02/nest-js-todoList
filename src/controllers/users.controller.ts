@@ -9,10 +9,12 @@ import {
   Res,
   Body,
   Param,
+  UseGuards,
 } from '@nestjs/common';
 import { User } from 'src/entities/users.entities';
 import { UserService } from 'src/services/users.services';
 import { Request, Response } from 'express';
+import { AuthGuard } from 'src/guard/auth.guard';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -25,6 +27,7 @@ export class UserController {
   ) {
     try {
       const findUserId: User[] = await this.userService.findUser(userData);
+
       res.status(200).json({ data: findUserId, msg: 'findAll' });
     } catch (error) {
       return console.log(error);
@@ -50,7 +53,7 @@ export class UserController {
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: string,
+    @Param('id') id: number,
     @Body() userData,
   ) {
     try {
