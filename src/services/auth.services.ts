@@ -13,7 +13,6 @@ import { JwtService } from '@nestjs/jwt';
 
 interface Payload {
   id: number;
-  password: string;
 }
 
 @Injectable()
@@ -23,7 +22,7 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async signUp(userData): Promise<User> {
+  async signUp(userData: CreateUserDTO): Promise<User> {
     const userFind = this.userModel.findOne({
       where: { email: userData.email },
     });
@@ -51,9 +50,22 @@ export class AuthService {
 
     if (!userFind || !passwordCheck) throw new UnauthorizedException();
 
-    const payload: Payload = { id: userFind.id, password: userFind.password };
+    const payload: Payload = { id: userFind.id };
+
+    const accessToken = await this.jwtService.signAsync(payload);
     return {
-      accessToken: this.jwtService.sign(payload),
+      accessToken,
     };
+  }
+
+  async signOut(userData: CreateUserDTO) {
+    const userFind = await this.userModel.findOne({
+      where: { email: userData.email, password: userData.password },
+    });
+
+    if (!userFind)
+      throw new HttpException('유저 없어용용구리~', HttpStatus.FOUND);
+
+    return userFind;
   }
 }
