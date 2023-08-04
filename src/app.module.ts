@@ -9,7 +9,7 @@ import { AuthModule } from './module/auth.module';
 import { AuthMiddleware } from './middelware/auth.middlewrare';
 import { UserController } from './controllers/users.controller';
 import { TodoController } from './controllers/todos.controller';
-import { JwtModule, JwtService } from '@nestjs/jwt';
+import { JwtService } from '@nestjs/jwt';
 import { TodoModule } from './module/todos.module';
 import { AuthGuard } from './guard/auth.guard';
 import { Todo } from './entities/todos.entities';
@@ -20,7 +20,6 @@ import { Todo } from './entities/todos.entities';
       isGlobal: true,
       envFilePath: ['.env'],
     }),
-    SequelizeModule.forFeature([User, Todo]),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -37,7 +36,7 @@ import { Todo } from './entities/todos.entities';
           username: configService.get('DB_USER'),
           password: configService.get('DB_PASSWORD'),
           database: configService.get('DB_DATABASE'),
-          models: [User],
+          models: [User, Todo],
           synchronize: true,
           autoLoadModels: true,
           logging: true,
@@ -45,9 +44,10 @@ import { Todo } from './entities/todos.entities';
       },
       inject: [ConfigService],
     }),
-    AuthModule,
+
     UserModule,
     TodoModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService, JwtService, AuthGuard],

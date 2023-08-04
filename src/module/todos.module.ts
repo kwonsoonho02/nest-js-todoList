@@ -6,10 +6,11 @@ import { TodoService } from 'src/services/todo.services';
 import { Todo } from 'src/entities/todos.entities';
 
 import { AuthGuard } from 'src/guard/auth.guard';
+import { JwtService } from '@nestjs/jwt';
 
 @Module({
   imports: [SequelizeModule.forFeature([Todo]), AuthModule],
   controllers: [TodoController],
-  providers: [TodoService, AuthGuard],
+  providers: [TodoService, AuthGuard, JwtService],
 })
 export class TodoModule {}
