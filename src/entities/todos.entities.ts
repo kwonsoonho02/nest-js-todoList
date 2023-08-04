@@ -17,7 +17,7 @@ export class Todo extends Model<
   InferCreationAttributes<Todo>
 > {
   @ForeignKey(() => User)
-  @Column({ primaryKey: true })
+  @Column({ primaryKey: true, autoIncrement: true })
   id: number;
 
   @Column

@@ -49,14 +49,15 @@ export class UserController {
     }
   }
 
-  @Put(':id')
+  @UseGuards(AuthGuard)
+  @Put()
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Param('id') id: number,
     @Body() userData,
   ) {
     try {
+      const id: number = req['user'];
       const updateUser: number = await this.userService.updateUser(
         id,
         userData,
@@ -65,13 +66,11 @@ export class UserController {
     } catch (error) {}
   }
 
-  @Delete(':id')
-  async deleteUser(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Param('id') id: number,
-  ) {
+  @UseGuards(AuthGuard)
+  @Delete()
+  async deleteUser(@Req() req: Request, @Res() res: Response) {
     try {
+      const id: number = req['user'];
       const deleteUser: number = await this.userService.deleteUser(id);
       res.status(200).json({ data: deleteUser, msg: 'delete' });
     } catch (error) {}
