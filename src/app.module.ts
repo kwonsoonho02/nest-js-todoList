@@ -9,8 +9,10 @@ import { AuthModule } from './module/auth.module';
 import { AuthMiddleware } from './middelware/auth.middlewrare';
 import { UserController } from './controllers/users.controller';
 import { TodoController } from './controllers/todos.controller';
-import { JwtService } from '@nestjs/jwt';
+import { JwtModule, JwtService } from '@nestjs/jwt';
 import { TodoModule } from './module/todos.module';
+import { AuthGuard } from './guard/auth.guard';
+import { Todo } from './entities/todos.entities';
 
 @Module({
   imports: [
@@ -18,6 +20,7 @@ import { TodoModule } from './module/todos.module';
       isGlobal: true,
       envFilePath: ['.env'],
     }),
+    SequelizeModule.forFeature([User, Todo]),
     SequelizeModule.forRootAsync({
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => {
@@ -47,7 +50,7 @@ import { TodoModule } from './module/todos.module';
     TodoModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [AppService, JwtService, AuthGuard],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

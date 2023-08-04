@@ -1,11 +1,16 @@
-import { Column, Model, Table } from 'sequelize-typescript';
+import { Column, HasMany, Model, Table } from 'sequelize-typescript';
+import { Todo } from './todos.entities';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   tableName: 'users',
   modelName: 'User',
 })
-export class User extends Model {
-  @Column({ primaryKey: true })
+export class User extends Model<
+  InferAttributes<User>,
+  InferCreationAttributes<User>
+> {
+  @Column({ primaryKey: true, autoIncrement: true })
   id: number;
 
   @Column
@@ -13,4 +18,7 @@ export class User extends Model {
 
   @Column
   password: string;
+
+  @HasMany(() => Todo, 'userId')
+  todos: Todo[];
 }

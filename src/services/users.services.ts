@@ -38,7 +38,7 @@ export class UserService {
 
     const hashedPassword = await hash(userData.password, 10);
     const [affectCount] = await this.userModel.update(
-      { ...userData, hashedPassword },
+      { ...userData, password: hashedPassword },
       { where: { id } },
     );
     return affectCount;

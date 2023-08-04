@@ -6,12 +6,16 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { User } from './users.entities';
+import { InferAttributes, InferCreationAttributes } from 'sequelize';
 
 @Table({
   tableName: 'todos',
   modelName: 'Todo',
 })
-export class Todo extends Model {
+export class Todo extends Model<
+  InferAttributes<Todo>,
+  InferCreationAttributes<Todo>
+> {
   @ForeignKey(() => User)
   @Column({ primaryKey: true })
   id: number;
@@ -22,6 +26,9 @@ export class Todo extends Model {
   @Column
   content: string;
 
-  @BelongsTo(() => User, 'id')
-  userId: User;
+  @Column
+  userId: number;
+
+  @BelongsTo(() => User, 'userId')
+  user?: User;
 }

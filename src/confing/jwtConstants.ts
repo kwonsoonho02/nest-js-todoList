@@ -1,10 +1,11 @@
+import { Injectable } from '@nestjs/common/decorators';
 import { ConfigService } from '@nestjs/config';
 
-export const jwtConstants = {
-  secret: null, // 기본값으로 설정
+@Injectable()
+export class JwtConstants {
+  constructor(private readonly configService: ConfigService) {}
 
-  async onApplicationBootstrap() {
-    const configService = new ConfigService();
-    jwtConstants.secret = configService.get<string>('JWT_SECRET_KEY');
-  },
-};
+  async JWTConfigService(): Promise<string> {
+    return this.configService.get<string>('JWT_SECRET_KEY');
+  }
+}

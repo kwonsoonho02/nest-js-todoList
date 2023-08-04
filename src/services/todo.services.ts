@@ -5,14 +5,15 @@ import { Todo } from 'src/entities/todos.entities';
 
 @Injectable()
 export class TodoService {
+  userModel: any;
   constructor(@InjectModel(Todo) private todoModel: typeof Todo) {}
 
   async findTodoList(id: number): Promise<Todo[]> {
-    const findUser: Todo = await this.todoModel.findByPk(id);
+    const findUser: Todo = await this.userModel.findByPk(id);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     const findList: Todo[] = await this.todoModel.findAll({
-      where: { userId: findUser },
+      where: { userId: findUser.id },
     });
 
     return findList;
@@ -25,19 +26,19 @@ export class TodoService {
   }
 
   async updateTodo(id: number, todoData: CreateTodoDto): Promise<number> {
-    const findUser = await this.todoModel.findByPk(id);
+    const findUser = await this.userModel.findByPk(id);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     const [affectCount] = await this.todoModel.update(
       { ...todoData },
-      { where: { userId: findUser } },
+      { where: { userId: findUser.id } },
     );
 
     return affectCount;
   }
 
   async deleteTodo(id: number): Promise<number> {
-    const findUser = await this.todoModel.findByPk(id);
+    const findUser = await this.userModel.findByPk(id);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     const deleteTodo = await this.todoModel.destroy({ where: { id } });
