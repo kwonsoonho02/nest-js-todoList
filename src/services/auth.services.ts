@@ -58,13 +58,10 @@ export class AuthService {
     };
   }
 
-  async signOut(userData: CreateUserDTO) {
-    const userFind = await this.userModel.findOne({
-      where: { email: userData.email, password: userData.password },
-    });
-
+  async signOut(userId: number) {
+    const userFind: User = await this.userModel.findByPk(userId);
     if (!userFind)
-      throw new HttpException('유저 없어용용구리~', HttpStatus.FOUND);
+      throw new HttpException('해당 유저가 아닙니당당구리~', HttpStatus.FOUND);
 
     return userFind;
   }
