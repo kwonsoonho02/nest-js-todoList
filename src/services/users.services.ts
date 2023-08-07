@@ -1,7 +1,7 @@
 import { User } from 'src/entities/users.entities';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateUserDTO } from 'src/dto/users.dto';
+import { CreateUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
 import { HttpException } from '@nestjs/common/exceptions';
 import { HttpStatus } from '@nestjs/common/enums';
 import { hash } from 'bcrypt';
@@ -10,7 +10,7 @@ import { hash } from 'bcrypt';
 export class UserService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
-  async findUser(userData): Promise<User[]> {
+  async findUser(): Promise<User[]> {
     const user = await this.userModel.findAll();
 
     // const user = await this.userModel.findAll({
@@ -32,22 +32,22 @@ export class UserService {
     });
   }
 
-  async updateUser(id: number, userData: CreateUserDTO): Promise<number> {
-    const findUser = await this.userModel.findByPk(id);
+  async updateUser(userId: number, userData: UpdateUserDTO): Promise<number> {
+    const findUser = await this.userModel.findByPk(userId);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     const hashedPassword = await hash(userData.password, 10);
     const [affectCount] = await this.userModel.update(
       { ...userData, password: hashedPassword },
-      { where: { id } },
+      { where: { id: userId } },
     );
     return affectCount;
   }
 
-  async deleteUser(id: number): Promise<number> {
-    const findUser = await this.userModel.findByPk(id);
+  async deleteUser(userId: number): Promise<number> {
+    const findUser = await this.userModel.findByPk(userId);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
-    return await this.userModel.destroy({ where: { id } });
+    return await this.userModel.destroy({ where: { id: userId } });
   }
 }

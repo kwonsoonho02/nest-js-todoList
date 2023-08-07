@@ -15,18 +15,15 @@ import { User } from 'src/entities/users.entities';
 import { UserService } from 'src/services/users.services';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/guard/auth.guard';
+import { CreateUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Get()
-  async findAllUserList(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() userData,
-  ) {
+  async findAllUserList(@Req() req: Request, @Res() res: Response) {
     try {
-      const findUserId: User[] = await this.userService.findUser(userData);
+      const findUserId: User[] = await this.userService.findUser();
 
       res.status(200).json({ data: findUserId, msg: 'findAll' });
     } catch (error) {
@@ -38,7 +35,7 @@ export class UserController {
   async createUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() userData,
+    @Body() userData: CreateUserDTO,
   ) {
     try {
       const createUser: User = await this.userService.createUser(userData);
@@ -54,12 +51,12 @@ export class UserController {
   async updateUser(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() userData,
+    @Body() userData: UpdateUserDTO,
   ) {
     try {
-      const id: number = req['user'];
+      const userId: number = req['user'].id;
       const updateUser: number = await this.userService.updateUser(
-        id,
+        userId,
         userData,
       );
       res.status(200).json({ data: updateUser, msg: 'update' });
@@ -70,8 +67,8 @@ export class UserController {
   @Delete()
   async deleteUser(@Req() req: Request, @Res() res: Response) {
     try {
-      const id: number = req['user'];
-      const deleteUser: number = await this.userService.deleteUser(id);
+      const userId: number = req['user'].id;
+      const deleteUser: number = await this.userService.deleteUser(userId);
       res.status(200).json({ data: deleteUser, msg: 'delete' });
     } catch (error) {}
   }
