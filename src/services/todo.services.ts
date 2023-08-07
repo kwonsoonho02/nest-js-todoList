@@ -1,47 +1,53 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
-import { CreateTodoDto } from 'src/dto/todos.dto';
+import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 
 @Injectable()
 export class TodoService {
-  userModel: any;
   constructor(@InjectModel(Todo) private todoModel: typeof Todo) {}
 
-  async findTodoList(id: number): Promise<Todo[]> {
-    const findUser: Todo = await this.userModel.findByPk(id);
-    if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
-
+  async findTodoList(userId: number): Promise<Todo[]> {
     const findList: Todo[] = await this.todoModel.findAll({
-      where: { userId: findUser.id },
+      where: { userId },
     });
 
     return findList;
   }
 
-  async createTodo(id: number, todoData: CreateTodoDto): Promise<Todo> {
-    const createTodo = await this.todoModel.create({ ...todoData, userId: id });
+  async createTodo(userId: number, todoData: CreateTodoDTO): Promise<Todo> {
+    const createTodo = await this.todoModel.create({ ...todoData, userId });
 
     return createTodo;
   }
 
-  async updateTodo(id: number, todoData: CreateTodoDto): Promise<number> {
-    const findUser = await this.userModel.findByPk(id);
-    if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
+  async updateTodo(
+    userId: number,
+    todoData: UpdateTodoDTO,
+    todoId: number,
+  ): Promise<number> {
+    const todoToUpdate = await this.todoModel.findByPk(todoId);
+    if (!todoToUpdate) throw new NotFoundException('투두 없어용용구리~');
 
-    const [affectCount] = await this.todoModel.update(
-      { ...todoData },
-      { where: { userId: findUser.id } },
-    );
+    const [affectCount] = await this.todoModel.update(todoData, {
+      where: { userId, id: todoId },
+    });
 
     return affectCount;
   }
 
-  async deleteTodo(id: number): Promise<number> {
-    const findUser = await this.userModel.findByPk(id);
-    if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
+  async deleteTodo(userId: number, todoId: number): Promise<number> {
+    const todoToUpdate = await this.todoModel.findByPk(todoId);
+    if (!todoToUpdate) throw new NotFoundException('투두 없어용용구리~');
 
-    const deleteTodo = await this.todoModel.destroy({ where: { id } });
+    const deleteTodo = await this.todoModel.destroy({
+      where: { userId, id: todoId },
+    });
 
     return deleteTodo;
   }

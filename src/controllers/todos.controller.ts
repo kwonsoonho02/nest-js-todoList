@@ -12,7 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { CreateTodoDto } from 'src/dto/todos.dto';
+import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { TodoService } from 'src/services/todo.services';
@@ -25,8 +25,9 @@ export class TodoController {
   @Get()
   async findTodoList(@Req() req: Request, @Res() res: Response) {
     try {
-      const id: number = req['user'];
-      const findList: Todo[] = await this.todoService.findTodoList(id);
+      const userId: number = req['user'].id;
+      console.log('아이디 : ', userId);
+      const findList: Todo[] = await this.todoService.findTodoList(userId);
 
       res.status(200).json({ data: findList, msg: 'findAll' });
     } catch (error) {}
@@ -36,36 +37,53 @@ export class TodoController {
   async createTodo(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() todoData: CreateTodoDto,
+    @Body() todoData: CreateTodoDTO,
   ) {
     try {
-      const id: number = req['user'];
-      const createTodo = await this.todoService.createTodo(id, todoData);
+      const userId: number = req['user'].id;
+      console.log(userId);
+      const createTodo: Todo = await this.todoService.createTodo(
+        userId,
+        todoData,
+      );
 
       res.status(200).json({ data: createTodo, msg: 'create' });
     } catch (error) {}
   }
   @UseGuards(AuthGuard)
-  @Put()
+  @Put('/:id')
   async updateTodo(
     @Req() req: Request,
     @Res() res: Response,
-    @Body() todoData: CreateTodoDto,
+    @Body() todoData: UpdateTodoDTO,
+    @Param('id') todoId: number,
   ) {
     try {
-      const id: number = req['user'];
-      const updateTodo = this.todoService.updateTodo(id, todoData);
+      const userId: number = req['user'].id;
+      console.log(todoId);
+      const updateTodo: Promise<number> = this.todoService.updateTodo(
+        userId,
+        todoData,
+        todoId,
+      );
 
       res.status(200).json({ data: updateTodo, msg: 'update' });
     } catch (error) {}
   }
 
   @UseGuards(AuthGuard)
-  @Delete()
-  async deleteTodo(@Req() req: Request, @Res() res: Response) {
+  @Delete('/:id')
+  async deleteTodo(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Param('id') todoId: number,
+  ) {
     try {
-      const id: number = req['user'];
-      const deleteTodo = await this.todoService.deleteTodo(id);
+      const userId: number = req['user'].id;
+      const deleteTodo: number = await this.todoService.deleteTodo(
+        userId,
+        todoId,
+      );
 
       res.status(200).json({ data: deleteTodo, msg: 'delete' });
     } catch (error) {}
