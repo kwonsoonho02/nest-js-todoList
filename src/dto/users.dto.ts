@@ -9,10 +9,18 @@ import {
 } from 'class-validator';
 
 export class CreateUserDTO {
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
   @IsString()
   @IsNotEmpty()
-  userId: string;
+  @MinLength(9)
+  @MaxLength(32)
+  password: string;
+}
 
+export class UpdateUserDTO {
   @IsEmail()
   @IsNotEmpty()
   email: string;
