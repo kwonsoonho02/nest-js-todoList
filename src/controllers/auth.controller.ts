@@ -39,14 +39,26 @@ export class AuthController {
     @Body() userData: CreateUserDTO,
   ) {
     try {
-      const userSignIn = await this.authService.signIn(userData);
+      const userSignIn: User = await this.authService.signIn(userData);
+      const accessToken: string = await this.authService.generateAccessToken(
+        userSignIn,
+      );
+      const refreshToken: string = await this.authService.generateRefreshToken(
+        userSignIn,
+      );
 
-      // res.cookie('authorization', userSignIn.accessToken, {
-      //   httpOnly: true,
-      //   maxAge: 30 * 60 * 1000,
-      // });
-      console.log(userSignIn.accessToken);
-      return res.json(userSignIn.accessToken);
+      res.setHeader('authorization', 'Bearer ' + [accessToken, refreshToken]);
+      res.cookie('accessToken', accessToken, {
+        httpOnly: true,
+      });
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+      });
+      return {
+        message: 'login success',
+        accessToken: accessToken,
+        refreshToken: refreshToken,
+      };
     } catch (error) {
       console.log(error);
     }

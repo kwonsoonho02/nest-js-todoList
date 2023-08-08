@@ -10,6 +10,7 @@ import { compare, hash } from 'bcrypt';
 import { CreateUserDTO } from 'src/dto/users.dto';
 import { User } from 'src/entities/users.entities';
 import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 interface Payload {
   id: number;
@@ -20,6 +21,7 @@ export class AuthService {
   constructor(
     @InjectModel(User) private userModel: typeof User,
     private jwtService: JwtService,
+    private configService: ConfigService,
   ) {}
 
   async signUp(userData: CreateUserDTO): Promise<User> {
@@ -39,7 +41,7 @@ export class AuthService {
     return createUser;
   }
 
-  async signIn(userData: CreateUserDTO): Promise<{ accessToken: string }> {
+  async signIn(userData: CreateUserDTO) {
     const userFind: User = await this.userModel.findOne({
       where: { email: userData.email },
     });
@@ -50,12 +52,26 @@ export class AuthService {
 
     if (!userFind || !passwordCheck) throw new UnauthorizedException();
 
-    const payload: Payload = { id: userFind.id };
-
-    const accessToken = await this.jwtService.signAsync(payload);
-    return {
-      accessToken,
+    return userFind;
+  }
+  async generateAccessToken(userSignIn: User): Promise<string> {
+    const payload: Payload = {
+      id: userSignIn.id,
     };
+    return this.jwtService.signAsync(payload);
+  }
+
+  async generateRefreshToken(userSignIn: User): Promise<string> {
+    const payload: Payload = {
+      id: userSignIn.id,
+    };
+    return this.jwtService.signAsync(
+      { id: payload.id },
+      {
+        secret: this.configService.get<string>('refreshToken'),
+        expiresIn: '24h',
+      },
+    );
   }
 
   async signOut(userId: number) {
