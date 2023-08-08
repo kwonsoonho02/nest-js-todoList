@@ -11,7 +11,7 @@ export class User extends Model<
   InferCreationAttributes<User>
 > {
   @Column({ primaryKey: true, autoIncrement: true })
-  id: number;
+  userId: number;
 
   @Column
   email: string;
@@ -25,6 +25,9 @@ export class User extends Model<
   @Column({ allowNull: true, type: DataType.DATE })
   updatedAt?: Date;
 
-  @HasMany(() => Todo, 'userId')
+  // @Column({ allowNull: true })
+  // currentRefreshToken: string;
+
+  @HasMany(() => Todo)
   todos: Todo[];
 }
