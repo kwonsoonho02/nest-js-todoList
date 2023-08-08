@@ -74,6 +74,16 @@ export class AuthService {
     );
   }
 
+  async initRefreshTokenDB(userData) {
+    const userFind: User = await this.userModel.findOne({
+      where: { email: userData.email },
+    });
+
+    const refreshToken = await this.generateRefreshToken(userFind);
+    userFind.currentRefreshToken = refreshToken;
+    return await userFind.save();
+  }
+
   async signOut(userId: number) {
     const userFind: User = await this.userModel.findByPk(userId);
     if (!userFind)
