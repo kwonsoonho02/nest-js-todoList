@@ -13,6 +13,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TodoModule } from './module/todos.module';
 import { AuthGuard } from './guard/auth.guard';
 import { Todo } from './entities/todos.entities';
+import { RefreshGuard } from './guard/refresh.gaurd';
 
 @Module({
   imports: [
@@ -50,7 +51,7 @@ import { Todo } from './entities/todos.entities';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService, AuthGuard],
+  providers: [AppService, JwtService, AuthGuard, RefreshGuard],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

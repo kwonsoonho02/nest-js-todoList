@@ -6,10 +6,11 @@ import { UserService } from 'src/services/users.services';
 import { AuthModule } from './auth.module';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshGuard } from 'src/guard/refresh.gaurd';
 
 @Module({
   imports: [SequelizeModule.forFeature([User]), AuthModule],
   controllers: [UserController],
-  providers: [UserService, AuthGuard, JwtService],
+  providers: [UserService, AuthGuard, JwtService, RefreshGuard],
 })
 export class UserModule {}

@@ -7,6 +7,7 @@ import { Todo } from 'src/entities/todos.entities';
 
 import { AuthGuard } from 'src/guard/auth.guard';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshGuard } from 'src/guard/refresh.gaurd';
 
 @Module({
   imports: [SequelizeModule.forFeature([Todo]), AuthModule],

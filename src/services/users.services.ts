@@ -39,7 +39,7 @@ export class UserService {
     const hashedPassword = await hash(userData.password, 10);
     const [affectCount] = await this.userModel.update(
       { ...userData, password: hashedPassword },
-      { where: { id: userId } },
+      { where: { userId } },
     );
     return affectCount;
   }
@@ -48,6 +48,6 @@ export class UserService {
     const findUser = await this.userModel.findByPk(userId);
     if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
-    return await this.userModel.destroy({ where: { id: userId } });
+    return await this.userModel.destroy({ where: { userId } });
   }
 }
