@@ -6,6 +6,7 @@ import { AuthService } from 'src/services/auth.services';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from 'src/guard/auth.guard';
+import { RefreshGuard } from 'src/guard/refresh.gaurd';
 
 @Module({
   imports: [
@@ -16,12 +17,12 @@ import { AuthGuard } from 'src/guard/auth.guard';
         // secret: await constant.JWTConfigService(),
         global: true,
         secret: configService.get<string>('accessToken'),
-        signOptions: { expiresIn: '1h' },
+        signOptions: { expiresIn: '5m' },
       }),
     }),
   ],
   controllers: [AuthController],
-  providers: [AuthService, AuthGuard],
-  exports: [AuthGuard, AuthService],
+  providers: [AuthService, AuthGuard, RefreshGuard],
+  exports: [AuthGuard, AuthService, RefreshGuard],
 })
 export class AuthModule {}

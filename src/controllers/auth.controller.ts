@@ -40,25 +40,23 @@ export class AuthController {
   ) {
     try {
       const userSignIn: User = await this.authService.signIn(userData);
+      const refreshTokenDB: User = await this.authService.initRefreshTokenDB(
+        userSignIn,
+      );
       const accessToken: string = await this.authService.generateAccessToken(
         userSignIn,
       );
-      const refreshToken: string = await this.authService.generateRefreshToken(
-        userSignIn,
-      );
+      const refreshToken = refreshTokenDB.currentRefreshToken;
 
-      res.setHeader('authorization', 'Bearer ' + [accessToken, refreshToken]);
-      res.cookie('accessToken', accessToken, {
-        httpOnly: true,
-      });
-      res.cookie('refreshToken', refreshToken, {
-        httpOnly: true,
-      });
-      return {
-        message: 'login success',
+      res.cookie('accessToken', accessToken, { httpOnly: true });
+      res.cookie('refreshToken', refreshToken, { httpOnly: true });
+
+      res.status(200).json({
         accessToken: accessToken,
         refreshToken: refreshToken,
-      };
+        msg: 'login success',
+      });
+      console.log(res);
     } catch (error) {
       console.log(error);
     }

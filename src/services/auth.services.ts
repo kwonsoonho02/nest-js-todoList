@@ -56,35 +56,35 @@ export class AuthService {
   }
   async generateAccessToken(userSignIn: User): Promise<string> {
     const payload: Payload = {
-      id: userSignIn.id,
+      id: userSignIn.userId,
     };
     return this.jwtService.signAsync(payload);
   }
 
   async generateRefreshToken(userSignIn: User): Promise<string> {
     const payload: Payload = {
-      id: userSignIn.id,
+      id: userSignIn.userId,
     };
+
     return this.jwtService.signAsync(
       { id: payload.id },
       {
         secret: this.configService.get<string>('refreshToken'),
-        expiresIn: '24h',
+        expiresIn: '1h',
       },
     );
   }
 
-  async initRefreshTokenDB(userData) {
-    const userFind: User = await this.userModel.findOne({
-      where: { email: userData.email },
-    });
+  async initRefreshTokenDB(userSignIn: User): Promise<User> {
+    const refreshToken = await this.generateRefreshToken(userSignIn);
 
-    const refreshToken = await this.generateRefreshToken(userFind);
-    userFind.currentRefreshToken = refreshToken;
-    return await userFind.save();
+    const hashedRefreshToken = await hash(refreshToken, 10);
+    userSignIn.currentRefreshToken = hashedRefreshToken;
+
+    return await userSignIn.save();
   }
 
-  async signOut(userId: number) {
+  async signOut(userId: number): Promise<User> {
     const userFind: User = await this.userModel.findByPk(userId);
     if (!userFind)
       throw new HttpException('해당 유저가 아닙니당당구리~', HttpStatus.FOUND);
