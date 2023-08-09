@@ -30,6 +30,8 @@ export class RefreshGuard implements CanActivate {
           },
         );
 
+        if (!refreshTokenPayload) throw new UnauthorizedException();
+
         const newAccessToken = this.jwtService.sign({
           sub: refreshTokenPayload.sub,
           secret: this.configService.get('accessToken'),

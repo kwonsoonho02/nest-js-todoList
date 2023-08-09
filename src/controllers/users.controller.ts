@@ -16,6 +16,7 @@ import { UserService } from 'src/services/users.services';
 import { Request, Response } from 'express';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { CreateUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
+import { RefreshGuard } from 'src/guard/refresh.gaurd';
 @Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
@@ -46,7 +47,7 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RefreshGuard)
   @Put()
   async updateUser(
     @Req() req: Request,
@@ -63,7 +64,7 @@ export class UserController {
     } catch (error) {}
   }
 
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RefreshGuard)
   @Delete()
   async deleteUser(@Req() req: Request, @Res() res: Response) {
     try {
