@@ -16,42 +16,36 @@ export class RefreshGuard implements CanActivate {
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const req = context.switchToHttp().getRequest();
     const res = context.switchToHttp().getResponse();
-    const accessToken = req.cookies.accessToken;
     const refreshToken = req.cookies.refreshToken;
-    console.log(refreshToken);
+
     try {
-      console.log('토큰 확인 : ', accessToken);
-      const accessTokenCheck = await this.jwtService.verifyAsync(accessToken, {
+      console.log(refreshToken);
+      const refreshTokenPayload = await this.jwtService.verifyAsync(
+        refreshToken,
+        {
+          secret: this.configService.get('refreshToken'),
+        },
+      );
+      const refreshId = refreshTokenPayload.id;
+      console.log('리프래쉬 토큰 아이디 확인 : ', refreshId);
+      await this.authService.getUserIfRefreshTokenMatches(
+        refreshToken,
+        refreshId,
+      );
+      console.log('리프래쉬 토큰 확인 완료');
+      const newAccessToken = this.jwtService.sign({
+        sub: refreshId,
         secret: this.configService.get('accessToken'),
       });
-      console.log('토큰 체크 : ', accessTokenCheck);
-      if (!accessTokenCheck) {
-        const refreshTokenPayload = await this.jwtService.verifyAsync(
-          refreshToken,
-          {
-            secret: this.configService.get('refreshToken'),
-          },
-        );
-        const refreshId = refreshTokenPayload.id;
-        console.log(refreshId);
-        const refreshTokenCheck: boolean =
-          await this.authService.getUserIfRefreshTokenMatches(
-            refreshToken,
-            refreshId,
-          );
-
-        const newAccessToken = this.jwtService.sign({
-          sub: refreshId,
-          secret: this.configService.get('accessToken'),
-        });
-        res.cookie('accessToken', newAccessToken, { httpOnly: true });
-        return true;
-      }
-
-      return true;
+      res.cookie('accessToken', newAccessToken, { httpOnly: true });
+      res.status(200).json({
+        accessToken: newAccessToken,
+        msg: '엑세스 토큰 재 발급 완료',
+      });
     } catch (error) {
       console.error('RefreshGuard Error:', error.message);
       throw new UnauthorizedException('Unauthorized');
     }
+    return true;
   }
 }

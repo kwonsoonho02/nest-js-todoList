@@ -17,7 +17,9 @@ import { RefreshGuard } from 'src/guard/refresh.gaurd';
         // secret: await constant.JWTConfigService(),
         global: true,
         secret: configService.get<string>('accessToken'),
-        signOptions: { expiresIn: '5m' },
+        signOptions: {
+          expiresIn: configService.get<string>('accessTokenTime'),
+        },
       }),
     }),
   ],

@@ -60,6 +60,17 @@ export class AuthService {
     };
     return this.jwtService.signAsync(payload);
   }
+  async getCurrentRefreshTokenExp(userSignIn): Promise<Date> {
+    const currentDate = new Date();
+
+    const currentRefreshTokenExp = new Date(
+      currentDate.getTime() +
+        parseInt(this.configService.get<string>('refreshTokenTime')),
+    );
+
+    userSignIn.currentRefreshTokenExp = currentRefreshTokenExp;
+    return await userSignIn.save();
+  }
 
   async generateRefreshToken(userSignIn: User): Promise<string> {
     const payload: Payload = {
@@ -70,18 +81,38 @@ export class AuthService {
       { id: payload.id },
       {
         secret: this.configService.get<string>('refreshToken'),
-        expiresIn: '1h',
+        expiresIn: this.configService.get<string>('refreshTokenTime'),
       },
     );
   }
 
   async initRefreshTokenDB(userSignIn: User): Promise<User> {
     const refreshToken = await this.generateRefreshToken(userSignIn);
-
+    console.log('해쉬 전  리플래쉬 토큰 : ', refreshToken);
     const hashedRefreshToken = await hash(refreshToken, 10);
     userSignIn.currentRefreshToken = hashedRefreshToken;
 
     return await userSignIn.save();
+  }
+
+  async getUserIfRefreshTokenMatches(
+    refreshToken,
+    refreshId,
+  ): Promise<boolean> {
+    const userRefreshToken: User = await this.userModel.findOne({
+      where: { userId: refreshId },
+    });
+
+    const isRefreshTokenMatching: boolean = await compare(
+      refreshToken,
+      userRefreshToken.currentRefreshToken,
+    );
+
+    if (!isRefreshTokenMatching)
+      throw new UnauthorizedException('히힝 토큰 없지롱롱구리');
+
+    console.log('리프래쉬 토큰 보유');
+    return true;
   }
 
   async signOut(userId: number): Promise<User> {

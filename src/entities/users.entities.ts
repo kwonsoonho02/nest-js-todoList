@@ -28,6 +28,9 @@ export class User extends Model<
   @Column({ allowNull: true })
   currentRefreshToken: string;
 
+  @Column({ allowNull: true, type: DataType.DATE })
+  currentRefreshTokenExp: Date;
+
   @HasMany(() => Todo)
   todos: Todo[];
 }
