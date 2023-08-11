@@ -12,6 +12,6 @@ import { RefreshGuard } from 'src/guard/refresh.gaurd';
 @Module({
   imports: [SequelizeModule.forFeature([Todo]), AuthModule],
   controllers: [TodoController],
-  providers: [TodoService, AuthGuard, JwtService],
+  providers: [TodoService, AuthGuard, JwtService, RefreshGuard],
 })
 export class TodoModule {}

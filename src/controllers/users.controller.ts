@@ -47,7 +47,7 @@ export class UserController {
     }
   }
 
-  @UseGuards(AuthGuard, RefreshGuard)
+  @UseGuards(AuthGuard)
   @Put()
   async updateUser(
     @Req() req: Request,

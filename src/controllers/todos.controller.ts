@@ -15,6 +15,7 @@ import { Request, Response } from 'express';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
+import { RefreshGuard } from 'src/guard/refresh.gaurd';
 import { TodoService } from 'src/services/todo.services';
 
 @Controller('todos')
@@ -27,6 +28,8 @@ export class TodoController {
     try {
       const userId: number = req['user'].id;
       console.log('아이디 : ', userId);
+      const cookie = req.cookies.refreshToken;
+      console.log('리프래쉬 : ', cookie);
       const findList: Todo[] = await this.todoService.findTodoList(userId);
 
       res.status(200).json({ data: findList, msg: 'findAll' });
@@ -50,7 +53,7 @@ export class TodoController {
       res.status(200).json({ data: createTodo, msg: 'create' });
     } catch (error) {}
   }
-  @UseGuards(AuthGuard)
+  @UseGuards(AuthGuard, RefreshGuard)
   @Put('/:id')
   async updateTodo(
     @Req() req: Request,
