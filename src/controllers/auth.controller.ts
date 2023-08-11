@@ -44,17 +44,14 @@ export class AuthController {
       const refreshToken = await this.authService.generateRefreshToken(
         userSignIn,
       );
-      const refreshTokenDB: User = await this.authService.initRefreshTokenDB(
+      const getRefreshTokenDB: User = await this.authService.initRefreshTokenDB(
         userSignIn,
       );
-      await this.authService.getCurrentRefreshTokenExp(userSignIn);
-
-      refreshTokenDB.currentRefreshToken;
-
-      console.log(
-        '해쉬 후 리플래쉬 토큰 : ',
-        refreshTokenDB.currentRefreshToken,
+      const getRefreshTokenExp = await this.authService.initRefreshTokenDBExp(
+        userSignIn,
       );
+      const refreshTokenDB = getRefreshTokenDB.currentRefreshToken;
+      const refreshTokenExp = getRefreshTokenExp.currentRefreshTokenExp;
 
       res.cookie('accessToken', accessToken, { httpOnly: true });
       res.cookie('refreshToken', refreshToken, { httpOnly: true });
@@ -62,14 +59,13 @@ export class AuthController {
       res.status(200).json({
         accessToken: accessToken,
         refreshToken: refreshToken,
-        msg: 'login success',
+        refreshTokenDB: refreshTokenDB,
+        refreshTokenExp: refreshTokenExp,
+        msg: 'signin',
       });
     } catch (error) {
       console.log(error);
     }
-  }
-  generateRefreshToken(userSignIn: User) {
-    throw new Error('Method not implemented.');
   }
 
   @UseGuards(AuthGuard)

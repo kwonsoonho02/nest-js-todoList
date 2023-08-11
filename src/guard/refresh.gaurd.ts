@@ -19,7 +19,6 @@ export class RefreshGuard implements CanActivate {
     const refreshToken = req.cookies.refreshToken;
 
     try {
-      console.log(refreshToken);
       const refreshTokenPayload = await this.jwtService.verifyAsync(
         refreshToken,
         {
@@ -34,8 +33,7 @@ export class RefreshGuard implements CanActivate {
       );
       console.log('리프래쉬 토큰 확인 완료');
       const newAccessToken = this.jwtService.sign({
-        sub: refreshId,
-        secret: this.configService.get('accessToken'),
+        id: refreshId,
       });
       res.cookie('accessToken', newAccessToken, { httpOnly: true });
       res.status(200).json({

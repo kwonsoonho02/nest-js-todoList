@@ -26,7 +26,7 @@ export class AuthGuard implements CanActivate {
       });
       req['user'] = payload;
     } catch {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('token not possession');
     }
     return true;
   }

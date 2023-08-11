@@ -60,17 +60,6 @@ export class AuthService {
     };
     return this.jwtService.signAsync(payload);
   }
-  async getCurrentRefreshTokenExp(userSignIn): Promise<Date> {
-    const currentDate = new Date();
-
-    const currentRefreshTokenExp = new Date(
-      currentDate.getTime() +
-        parseInt(this.configService.get<string>('refreshTokenTime')),
-    );
-
-    userSignIn.currentRefreshTokenExp = currentRefreshTokenExp;
-    return await userSignIn.save();
-  }
 
   async generateRefreshToken(userSignIn: User): Promise<string> {
     const payload: Payload = {
@@ -89,9 +78,22 @@ export class AuthService {
   async initRefreshTokenDB(userSignIn: User): Promise<User> {
     const refreshToken = await this.generateRefreshToken(userSignIn);
     console.log('해쉬 전  리플래쉬 토큰 : ', refreshToken);
+
     const hashedRefreshToken = await hash(refreshToken, 10);
     userSignIn.currentRefreshToken = hashedRefreshToken;
 
+    return await userSignIn.save();
+  }
+
+  async initRefreshTokenDBExp(userSignIn): Promise<User> {
+    const currentDate = new Date();
+
+    const currentRefreshTokenExp = new Date(
+      currentDate.getTime() +
+        parseInt(this.configService.get<string>('refreshTokenTime')),
+    );
+
+    userSignIn.currentRefreshTokenExp = currentRefreshTokenExp;
     return await userSignIn.save();
   }
 
@@ -111,7 +113,7 @@ export class AuthService {
     if (!isRefreshTokenMatching)
       throw new UnauthorizedException('히힝 토큰 없지롱롱구리');
 
-    console.log('리프래쉬 토큰 보유');
+    console.log('refresh token possession');
     return true;
   }
 
