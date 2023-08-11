@@ -10,27 +10,39 @@ import {
   Res,
   Body,
   UseGuards,
+  Query,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
+import { SearchGoodsDto } from 'src/dto/searchGoods.dto';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { RefreshGuard } from 'src/guard/refresh.gaurd';
 import { TodoService } from 'src/services/todo.services';
 
+@ApiTags('todos')
 @Controller('todos')
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
   @UseGuards(AuthGuard)
   @Get()
-  async findTodoList(@Req() req: Request, @Res() res: Response) {
+  @ApiOperation({ summary: 'Get all todos' })
+  async findTodoList(
+    @Req() req: Request,
+    @Res() res: Response,
+    @Query() page: SearchGoodsDto,
+  ) {
     try {
       const userId: number = req['user'].id;
       console.log('아이디 : ', userId);
       const cookie = req.cookies.refreshToken;
       console.log('리프래쉬 : ', cookie);
-      const findList: Todo[] = await this.todoService.findTodoList(userId);
+      const findList: Todo[] = await this.todoService.findTodoList(
+        userId,
+        page,
+      );
 
       res.status(200).json({ data: findList, msg: 'findAll' });
     } catch (error) {}
