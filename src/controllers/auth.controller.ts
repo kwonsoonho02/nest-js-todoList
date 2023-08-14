@@ -78,6 +78,8 @@ export class AuthController {
         userId,
       );
       res.clearCookie('authorization');
+      res.clearCookie('accessToken');
+      res.clearCookie('refreshToken');
       res.status(200).json({
         data: deleteToken,
         clear: clearDBRefreshToken,
