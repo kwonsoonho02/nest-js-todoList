@@ -12,7 +12,7 @@ import { Todo } from 'src/entities/todos.entities';
 export class TodoService {
   constructor(@InjectModel(Todo) private todoModel: typeof Todo) {}
 
-  async findTodoList(userId: number): Promise<Todo[]> {
+  async findTodoList(userId: number, page): Promise<Todo[]> {
     const findList: Todo[] = await this.todoModel.findAll({
       where: { userId },
     });
