@@ -124,4 +124,14 @@ export class AuthService {
 
     return userFind;
   }
+
+  async clearDBRefreshToken(userId: number): Promise<User> {
+    const userFind: User = await this.userModel.findByPk(userId);
+
+    console.log(userFind);
+
+    userFind.currentRefreshToken = null;
+
+    return await userFind.save();
+  }
 }

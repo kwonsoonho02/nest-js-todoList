@@ -73,9 +73,16 @@ export class AuthController {
   async signOut(@Res() res: Response, @Req() req: Request) {
     try {
       const userId: number = req['user'].id;
-      const deleteToken = await this.authService.signOut(userId);
+      const deleteToken: User = await this.authService.signOut(userId);
+      const clearDBRefreshToken = await this.authService.clearDBRefreshToken(
+        userId,
+      );
       res.clearCookie('authorization');
-      res.status(200).json({ data: deleteToken, message: 'logout' });
+      res.status(200).json({
+        data: deleteToken,
+        clear: clearDBRefreshToken,
+        message: 'logout',
+      });
     } catch (error) {}
   }
 
