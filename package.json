@@ -26,6 +26,7 @@
     "@nestjs/jwt": "^10.1.0",
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/sequelize": "^10.0.0",
+    "@nestjs/swagger": "^7.1.8",
     "@nestjs/typeorm": "^10.0.0",
     "@types/bcrypt": "^5.0.0",
     "bcrypt": "^5.1.0",
@@ -39,6 +40,7 @@
     "sequelize": "^6.32.1",
     "sequelize-cli": "^6.6.1",
     "sequelize-typescript": "^2.1.5",
+    "swagger-ui-express": "^5.0.0",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {
