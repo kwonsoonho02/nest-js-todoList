@@ -6,14 +6,13 @@ import { User } from './entities/users.entities';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModule } from './module/users.module';
 import { AuthModule } from './module/auth.module';
-import { AuthMiddleware } from './middelware/auth.middlewrare';
 import { UserController } from './controllers/users.controller';
 import { TodoController } from './controllers/todos.controller';
 import { JwtService } from '@nestjs/jwt';
 import { TodoModule } from './module/todos.module';
 import { AuthGuard } from './guard/auth.guard';
 import { Todo } from './entities/todos.entities';
-import { RefreshGuard } from './guard/refresh.gaurd';
+import { RefreshGuard } from './guard/refresh.guard';
 
 @Module({
   imports: [
@@ -53,8 +52,4 @@ import { RefreshGuard } from './guard/refresh.gaurd';
   controllers: [AppController],
   providers: [AppService, JwtService, AuthGuard, RefreshGuard],
 })
-export class AppModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(AuthMiddleware).forRoutes(UserController, TodoController);
-  }
-}
+export class AppModule {}
