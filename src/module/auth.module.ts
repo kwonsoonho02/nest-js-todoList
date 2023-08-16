@@ -6,7 +6,7 @@ import { AuthService } from 'src/services/auth.services';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { RefreshGuard } from 'src/guard/refresh.gaurd';
+import { RefreshGuard } from 'src/guard/refresh.guard';
 
 @Module({
   imports: [
@@ -14,7 +14,6 @@ import { RefreshGuard } from 'src/guard/refresh.gaurd';
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: async (configService: ConfigService) => ({
-        // secret: await constant.JWTConfigService(),
         global: true,
         secret: configService.get<string>('accessToken'),
         signOptions: {

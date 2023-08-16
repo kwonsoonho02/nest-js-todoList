@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/sequelize';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';

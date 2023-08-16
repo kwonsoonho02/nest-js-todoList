@@ -5,7 +5,6 @@ import {
   ForeignKey,
   BelongsTo,
   DataType,
-  AllowNull,
 } from 'sequelize-typescript';
 import { User } from './users.entities';
 import { InferAttributes, InferCreationAttributes } from 'sequelize';
