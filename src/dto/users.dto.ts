@@ -11,26 +11,26 @@ export class CreateUserDTO {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ type: String, description: 'Email' })
-  email: string;
+  public email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(9)
   @MaxLength(32)
   @ApiProperty({ type: String, description: 'Password' })
-  password: string;
+  public password: string;
 }
 
 export class UpdateUserDTO {
   @IsEmail()
   @IsNotEmpty()
   @ApiProperty({ type: String, description: 'Email' })
-  email: string;
+  public email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(9)
   @MaxLength(32)
   @ApiProperty({ type: String, description: 'Password' })
-  password: string;
+  public password: string;
 }
