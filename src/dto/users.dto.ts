@@ -1,7 +1,6 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
-  IsNumber,
-  IsOptional,
   IsString,
   IsNotEmpty,
   MaxLength,
@@ -11,23 +10,27 @@ import {
 export class CreateUserDTO {
   @IsEmail()
   @IsNotEmpty()
+  @ApiProperty({ type: String, description: 'Email' })
   email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(9)
   @MaxLength(32)
+  @ApiProperty({ type: String, description: 'Password' })
   password: string;
 }
 
 export class UpdateUserDTO {
   @IsEmail()
   @IsNotEmpty()
+  @ApiProperty({ type: String, description: 'Email' })
   email: string;
 
   @IsString()
   @IsNotEmpty()
   @MinLength(9)
   @MaxLength(32)
+  @ApiProperty({ type: String, description: 'Password' })
   password: string;
 }

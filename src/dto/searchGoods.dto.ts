@@ -5,7 +5,7 @@ import { ApiProperty } from '@nestjs/swagger';
 export class SearchGoodsDto extends PageRequest {
   @IsString()
   @IsOptional()
-  @ApiProperty({ type: String, description: 'ID' })
+  @ApiProperty({ type: Number, description: 'ID' })
   id?: number;
 
   @IsString()
