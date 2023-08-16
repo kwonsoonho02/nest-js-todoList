@@ -12,12 +12,15 @@ import { Request, Response } from 'express';
 import { CreateUserDTO } from 'src/dto/users.dto';
 import { User } from 'src/entities/users.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { RefreshGuard } from 'src/guard/refresh.gaurd';
+import { RefreshGuard } from 'src/guard/refresh.guard';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('auth')
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
+  @ApiOperation({ summary: 'User signup' })
   @Post('/signup')
   async signUp(@Body() userData: CreateUserDTO, @Res() res: Response) {
     try {
@@ -29,6 +32,7 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: 'User signin' })
   @Post('/signin')
   async signIn(
     @Req() req: Request,
@@ -68,6 +72,7 @@ export class AuthController {
     }
   }
 
+  @ApiOperation({ summary: 'User signout' })
   @UseGuards(AuthGuard)
   @Post('/signout')
   async signOut(@Res() res: Response, @Req() req: Request) {
@@ -88,6 +93,7 @@ export class AuthController {
     } catch (error) {}
   }
 
+  @ApiOperation({ summary: 'Refresh token' })
   @UseGuards(RefreshGuard)
   @Post('/refresh')
   async refresh() {

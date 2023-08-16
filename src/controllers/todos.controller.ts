@@ -2,7 +2,6 @@ import {
   Controller,
   Delete,
   Get,
-  Next,
   Param,
   Post,
   Put,
@@ -18,7 +17,7 @@ import { SearchGoodsDto } from 'src/dto/searchGoods.dto';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { RefreshGuard } from 'src/guard/refresh.gaurd';
+import { RefreshGuard } from 'src/guard/refresh.guard';
 import { TodoService } from 'src/services/todo.services';
 
 @ApiTags('todos')
@@ -26,9 +25,9 @@ import { TodoService } from 'src/services/todo.services';
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
+  @ApiOperation({ summary: 'Get all todos' })
   @UseGuards(AuthGuard)
   @Get()
-  @ApiOperation({ summary: 'Get all todos' })
   async findTodoList(
     @Req() req: Request,
     @Res() res: Response,
@@ -47,6 +46,8 @@ export class TodoController {
       res.status(200).json({ data: findList, msg: 'findAll' });
     } catch (error) {}
   }
+
+  @ApiOperation({ summary: 'Create todo' })
   @UseGuards(AuthGuard)
   @Post()
   async createTodo(
@@ -65,7 +66,9 @@ export class TodoController {
       res.status(200).json({ data: createTodo, msg: 'create' });
     } catch (error) {}
   }
-  @UseGuards(AuthGuard, RefreshGuard)
+
+  @ApiOperation({ summary: 'Update todo' })
+  @UseGuards(AuthGuard)
   @Put('/:id')
   async updateTodo(
     @Req() req: Request,
@@ -86,6 +89,7 @@ export class TodoController {
     } catch (error) {}
   }
 
+  @ApiOperation({ summary: 'Delete todo' })
   @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteTodo(
