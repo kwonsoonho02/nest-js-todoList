@@ -34,11 +34,7 @@ export class AuthController {
 
   @ApiOperation({ summary: 'User signin' })
   @Post('/signin')
-  async signIn(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() userData: CreateUserDTO,
-  ) {
+  async signIn(@Res() res: Response, @Body() userData: CreateUserDTO) {
     try {
       const userSignIn: User = await this.authService.signIn(userData);
 
@@ -60,13 +56,15 @@ export class AuthController {
       res.cookie('accessToken', accessToken, { httpOnly: true });
       res.cookie('refreshToken', refreshToken, { httpOnly: true });
 
-      res.status(200).json({
-        accessToken: accessToken,
-        refreshToken: refreshToken,
+      const responsePayload = {
+        accessToken,
+        refreshToken,
         refreshTokenDB: refreshTokenDB,
         refreshTokenExp: refreshTokenExp,
         msg: 'signin',
-      });
+      };
+
+      res.status(200).json(responsePayload);
     } catch (error) {
       console.log(error);
     }

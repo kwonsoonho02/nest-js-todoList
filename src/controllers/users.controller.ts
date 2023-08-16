@@ -2,13 +2,11 @@ import {
   Controller,
   Delete,
   Get,
-  Next,
   Post,
   Put,
   Req,
   Res,
   Body,
-  Param,
   UseGuards,
 } from '@nestjs/common';
 import { User } from 'src/entities/users.entities';

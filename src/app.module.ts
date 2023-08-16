@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { ConfigModule, ConfigService } from '@nestjs/config';
@@ -6,8 +6,6 @@ import { User } from './entities/users.entities';
 import { SequelizeModule } from '@nestjs/sequelize';
 import { UserModule } from './module/users.module';
 import { AuthModule } from './module/auth.module';
-import { UserController } from './controllers/users.controller';
-import { TodoController } from './controllers/todos.controller';
 import { JwtService } from '@nestjs/jwt';
 import { TodoModule } from './module/todos.module';
 import { AuthGuard } from './guard/auth.guard';

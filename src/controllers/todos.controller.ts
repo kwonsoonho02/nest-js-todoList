@@ -17,7 +17,6 @@ import { SearchGoodsDto } from 'src/dto/searchGoods.dto';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
-import { RefreshGuard } from 'src/guard/refresh.guard';
 import { TodoService } from 'src/services/todo.services';
 
 @ApiTags('todos')
