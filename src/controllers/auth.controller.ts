@@ -6,6 +6,7 @@ import {
   Body,
   UseGuards,
   UnauthorizedException,
+  Header,
 } from '@nestjs/common';
 import { AuthService } from 'src/services/auth.services';
 import { Request, Response } from 'express';
@@ -14,21 +15,25 @@ import { User } from 'src/entities/users.entities';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { RefreshGuard } from 'src/guard/refresh.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { hash } from 'bcrypt';
+import { Console } from 'console';
 
 @ApiTags('auth')
 @Controller()
 export class AuthController {
+  configService: any;
+  jwtService: any;
   constructor(private readonly authService: AuthService) {}
 
   @ApiOperation({ summary: 'User signup' })
   @Post('/signup')
-  async signUp(@Body() userData: CreateUserDTO, @Res() res: Response) {
+  async signUp(@Body() userData: CreateUserDTO) {
     try {
       const signUp: User = await this.authService.signUp(userData);
 
-      res.status(200).json({ data: signUp, msg: 'create' });
+      return signUp;
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 
@@ -39,18 +44,21 @@ export class AuthController {
       const userSignIn: User = await this.authService.signIn(userData);
 
       const accessToken: string = await this.authService.generateAccessToken(
-        userSignIn,
+        userSignIn.userId,
       );
       const refreshToken = await this.authService.generateRefreshToken(
         userSignIn,
       );
-      const getRefreshTokenDB: User = await this.authService.initRefreshTokenDB(
-        userSignIn,
-      );
+
       const getRefreshTokenExp = await this.authService.initRefreshTokenDBExp(
         userSignIn,
       );
-      const refreshTokenDB = getRefreshTokenDB.currentRefreshToken;
+
+      const hashedRefreshToken = await hash(refreshToken, 10);
+      userSignIn.currentRefreshToken = hashedRefreshToken;
+
+      const initRefreshTokenDB = await userSignIn.save();
+
       const refreshTokenExp = getRefreshTokenExp.currentRefreshTokenExp;
 
       res.cookie('accessToken', accessToken, { httpOnly: true });
@@ -59,43 +67,52 @@ export class AuthController {
       const responsePayload = {
         accessToken,
         refreshToken,
-        refreshTokenDB: refreshTokenDB,
-        refreshTokenExp: refreshTokenExp,
-        msg: 'signin',
+        currentRefreshToken: initRefreshTokenDB.currentRefreshToken,
+        currentRefreshTokenExp: refreshTokenExp,
+        msg: 'sign in',
       };
 
-      res.status(200).json(responsePayload);
+      return res.status(200).json(responsePayload);
     } catch (error) {
-      console.log(error);
+      throw error;
     }
   }
 
-  @ApiOperation({ summary: 'User signout' })
+  @ApiOperation({ summary: 'User sign out' })
   @UseGuards(AuthGuard)
   @Post('/signout')
   async signOut(@Res() res: Response, @Req() req: Request) {
     try {
       const userId: number = req['user'].id;
-      const deleteToken: User = await this.authService.signOut(userId);
       const clearDBRefreshToken = await this.authService.clearDBRefreshToken(
         userId,
       );
+
       res.clearCookie('authorization');
       res.clearCookie('accessToken');
       res.clearCookie('refreshToken');
-      res.status(200).json({
-        data: deleteToken,
-        clear: clearDBRefreshToken,
-        message: 'logout',
-      });
-    } catch (error) {}
+
+      const responsePayload = {
+        clearDBRefreshToken,
+        msg: 'sign out',
+      };
+
+      return res.status(200).json(responsePayload);
+    } catch (error) {
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: 'Refresh token' })
   @UseGuards(RefreshGuard)
   @Post('/refresh')
-  async refresh() {
+  async refresh(@Req() req: Request) {
     try {
+      const refreshId = req['refreshId'];
+      console.log(refreshId);
+      const accessToken = await this.authService.generateAccessToken(refreshId);
+
+      return accessToken;
     } catch (err) {
       throw new UnauthorizedException();
     }
