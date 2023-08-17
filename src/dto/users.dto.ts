@@ -15,22 +15,10 @@ export class CreateUserDTO {
 
   @IsString()
   @IsNotEmpty()
-  @MinLength(9)
+  @MinLength(5)
   @MaxLength(32)
   @ApiProperty({ type: String, description: 'Password' })
   public password: string;
 }
 
-export class UpdateUserDTO {
-  @IsEmail()
-  @IsNotEmpty()
-  @ApiProperty({ type: String, description: 'Email' })
-  public email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  @MinLength(9)
-  @MaxLength(32)
-  @ApiProperty({ type: String, description: 'Password' })
-  public password: string;
-}
+export class UpdateUserDTO extends CreateUserDTO {}

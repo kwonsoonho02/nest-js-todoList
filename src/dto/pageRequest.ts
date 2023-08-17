@@ -1,6 +1,6 @@
 import { IsOptional, IsString } from 'class-validator';
 
-export class PageRequest extends Request {
+export class PageRequest {
   @IsString()
   @IsOptional()
   pageNo?: number | 1;
