@@ -48,6 +48,6 @@ import { RefreshGuard } from './guard/refresh.guard';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService, AuthGuard, RefreshGuard],
+  providers: [AppService, JwtService],
 })
 export class AppModule {}
