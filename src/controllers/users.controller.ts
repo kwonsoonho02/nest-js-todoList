@@ -24,48 +24,30 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get all users' })
   @Get()
-  async findAllUserList(@Req() req: Request, @Res() res: Response) {
+  async findAllUserList() {
     try {
-      const findUserId: User[] = await this.userService.findUser();
+      const findUsers: User[] = await this.userService.findUser();
 
-      res.status(200).json({ data: findUserId, msg: 'findAll' });
+      return findUsers;
     } catch (error) {
-      return console.log(error);
-    }
-  }
-
-  @ApiOperation({ summary: 'Create user' })
-  @Post()
-  async createUser(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() userData: CreateUserDTO,
-  ) {
-    try {
-      const createUser: User = await this.userService.createUser(userData);
-
-      res.status(201).json({ data: createUser, msg: 'create' });
-    } catch (error) {
-      return console.log(error);
+      throw error;
     }
   }
 
   @ApiOperation({ summary: 'Update user' })
   @UseGuards(AuthGuard)
   @Put()
-  async updateUser(
-    @Req() req: Request,
-    @Res() res: Response,
-    @Body() userData: UpdateUserDTO,
-  ) {
+  async updateUser(@Req() req: Request, @Body() userData: UpdateUserDTO) {
     try {
       const userId: number = req['user'].id;
       const updateUser: number = await this.userService.updateUser(
         userId,
         userData,
       );
-      res.status(200).json({ data: updateUser, msg: 'update' });
-    } catch (error) {}
+      return updateUser;
+    } catch (error) {
+      throw error;
+    }
   }
 
   @ApiOperation({ summary: 'Delete user' })
@@ -75,7 +57,9 @@ export class UserController {
     try {
       const userId: number = req['user'].id;
       const deleteUser: number = await this.userService.deleteUser(userId);
-      res.status(200).json({ data: deleteUser, msg: 'delete' });
-    } catch (error) {}
+      return deleteUser;
+    } catch (error) {
+      throw error;
+    }
   }
 }
