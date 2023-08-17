@@ -28,7 +28,6 @@ export class AuthService {
     const userFind = this.userModel.findOne({
       where: { email: userData.email },
     });
-    console.log(userData.email);
     if (!userFind)
       throw new HttpException('이메일 있슴당당구리~', HttpStatus.CONFLICT);
 
@@ -54,9 +53,9 @@ export class AuthService {
 
     return userFind;
   }
-  async generateAccessToken(userSignIn: User): Promise<string> {
+  async generateAccessToken(userId: number): Promise<string> {
     const payload: Payload = {
-      id: userSignIn.userId,
+      id: userId,
     };
     return this.jwtService.signAsync(payload);
   }
@@ -66,23 +65,15 @@ export class AuthService {
       id: userSignIn.userId,
     };
 
-    return this.jwtService.signAsync(
+    const refreshToken = await this.jwtService.signAsync(
       { id: payload.id },
       {
         secret: this.configService.get<string>('refreshToken'),
         expiresIn: this.configService.get<string>('refreshTokenTime'),
       },
     );
-  }
 
-  async initRefreshTokenDB(userSignIn: User): Promise<User> {
-    const refreshToken = await this.generateRefreshToken(userSignIn);
-    console.log('해쉬 전  리플래쉬 토큰 : ', refreshToken);
-
-    const hashedRefreshToken = await hash(refreshToken, 10);
-    userSignIn.currentRefreshToken = hashedRefreshToken;
-
-    return await userSignIn.save();
+    return refreshToken;
   }
 
   async initRefreshTokenDBExp(userSignIn): Promise<User> {
@@ -117,18 +108,8 @@ export class AuthService {
     return true;
   }
 
-  async signOut(userId: number): Promise<User> {
-    const userFind: User = await this.userModel.findByPk(userId);
-    if (!userFind)
-      throw new HttpException('해당 유저가 아닙니당당구리~', HttpStatus.FOUND);
-
-    return userFind;
-  }
-
   async clearDBRefreshToken(userId: number): Promise<User> {
     const userFind: User = await this.userModel.findByPk(userId);
-
-    console.log(userFind);
 
     userFind.currentRefreshToken = null;
 

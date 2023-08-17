@@ -18,23 +18,10 @@ export class UserService {
     // });
     return user;
   }
-  async createUser(userData: CreateUserDTO): Promise<User> {
-    const findEmail = await this.userModel.findOne({
-      where: { email: userData.email },
-    });
-    if (findEmail)
-      throw new HttpException('이메일 있슴당당구리~', HttpStatus.CONFLICT);
-
-    const hashedPassword = await hash(userData.password, 10);
-    return await this.userModel.create({
-      ...userData,
-      password: hashedPassword,
-    });
-  }
 
   async updateUser(userId: number, userData: UpdateUserDTO): Promise<number> {
-    const findUser = await this.userModel.findByPk(userId);
-    if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
+    const findUserId = await this.userModel.findByPk(userId);
+    if (!findUserId) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     const hashedPassword = await hash(userData.password, 10);
     const [affectCount] = await this.userModel.update(
@@ -45,8 +32,8 @@ export class UserService {
   }
 
   async deleteUser(userId: number): Promise<number> {
-    const findUser = await this.userModel.findByPk(userId);
-    if (!findUser) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
+    const findUserId = await this.userModel.findByPk(userId);
+    if (!findUserId) throw new HttpException('유저 없음', HttpStatus.NOT_FOUND);
 
     return await this.userModel.destroy({ where: { userId } });
   }
