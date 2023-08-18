@@ -92,13 +92,13 @@ export class AuthService {
     refreshToken,
     refreshId,
   ): Promise<boolean> {
-    const userRefreshToken: User = await this.userModel.findOne({
+    const findUserRefreshToken: User = await this.userModel.findOne({
       where: { userId: refreshId },
     });
 
     const isRefreshTokenMatching: boolean = await compare(
       refreshToken,
-      userRefreshToken.currentRefreshToken,
+      findUserRefreshToken.currentRefreshToken,
     );
 
     if (!isRefreshTokenMatching)
