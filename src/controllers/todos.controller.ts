@@ -10,6 +10,9 @@ import {
   Body,
   UseGuards,
   Query,
+  UseFilters,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -17,11 +20,13 @@ import { Page } from 'src/common/page';
 import { SearchGoodsDto } from 'src/dto/searchGoods.dto';
 import { CreateTodoDTO, UpdateTodoDTO } from 'src/dto/todos.dto';
 import { Todo } from 'src/entities/todos.entities';
+import { HttpExceptionFilter } from 'src/filter/httpExceptionFilter';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { TodoService } from 'src/services/todo.services';
 
 @ApiTags('todos')
 @Controller('todos')
+@UseFilters(HttpExceptionFilter)
 export class TodoController {
   constructor(private readonly todoService: TodoService) {}
 
@@ -29,32 +34,40 @@ export class TodoController {
   @UseGuards(AuthGuard)
   @Get()
   async findTodoList(@Req() req: Request, @Query() page: SearchGoodsDto) {
-    try {
-      const userId: number = req['user'].id;
-      const findList = await this.todoService.findTodoList(userId, page);
+    const userId: number = req['user'].id;
+    const findLists: Page<Todo> = await this.todoService.findTodoList(
+      userId,
+      page,
+    );
 
-      return findList;
-    } catch (error) {
-      throw error;
+    if (!findLists) {
+      throw new HttpException(
+        'Failed to find lists',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+    return findLists;
   }
 
   @ApiOperation({ summary: 'Create todo' })
   @UseGuards(AuthGuard)
   @Post()
   async createTodo(@Req() req: Request, @Body() todoData: CreateTodoDTO) {
-    try {
-      const userId: number = req['user'].id;
-      console.log(userId);
-      const createTodo: Todo = await this.todoService.createTodo(
-        userId,
-        todoData,
-      );
+    const userId: number = req['user'].id;
+    console.log(userId);
+    const createTodo: Todo = await this.todoService.createTodo(
+      userId,
+      todoData,
+    );
 
-      return createTodo;
-    } catch (error) {
-      throw error;
+    if (!createTodo) {
+      throw new HttpException(
+        'Failed to create list',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
+    return createTodo;
   }
 
   @ApiOperation({ summary: 'Update todo' })
@@ -66,34 +79,40 @@ export class TodoController {
     @Body() todoData: UpdateTodoDTO,
     @Param('id') todoId: number,
   ) {
-    try {
-      const userId: number = req['user'].id;
-      const updateTodo: number = await this.todoService.updateTodo(
-        userId,
-        todoData,
-        todoId,
-      );
+    const userId: number = req['user'].id;
+    const updateTodo: number = await this.todoService.updateTodo(
+      userId,
+      todoData,
+      todoId,
+    );
 
-      return updateTodo;
-    } catch (error) {
-      throw error;
+    if (!updateTodo) {
+      throw new HttpException(
+        'Failed to update list',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
+    return updateTodo;
   }
 
   @ApiOperation({ summary: 'Delete todo' })
   @UseGuards(AuthGuard)
   @Delete('/:id')
   async deleteTodo(@Req() req: Request, @Param('id') todoId: number) {
-    try {
-      const userId: number = req['user'].id;
-      const deleteTodo: number = await this.todoService.deleteTodo(
-        userId,
-        todoId,
-      );
+    const userId: number = req['user'].id;
+    const deleteTodo: number = await this.todoService.deleteTodo(
+      userId,
+      todoId,
+    );
 
-      return deleteTodo;
-    } catch (error) {
-      throw error;
+    if (!deleteTodo) {
+      throw new HttpException(
+        'Failed to delete list',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
+
+    return deleteTodo;
   }
 }

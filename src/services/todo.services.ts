@@ -9,29 +9,21 @@ import { Todo } from 'src/entities/todos.entities';
 export class TodoService {
   constructor(@InjectModel(Todo) private todoModel: typeof Todo) {}
 
-  // async findTodoList(
-  //   userId: number,
-  //   page: SearchGoodsDto,
-  // ): Promise<Page<Todo>> {
-  //   const totalCount = await this.todoModel.count({ where: { userId } });
-  //   const findList: Todo[] = await this.todoModel.findAll({
-  //     where: { userId },
-  //     limit: page.getLimit(),
-  //     offset: page.getOffset(),
-  //   });
+  async findTodoList(
+    userId: number,
+    page: SearchGoodsDto,
+  ): Promise<Page<Todo>> {
+    const totalCount = await this.todoModel.count({ where: { userId } });
 
-  //   const totalPage = Math.ceil(totalCount / page.pageSize);
-  //   const resultPage = new Page(page.pageSize, totalCount, totalPage, findList);
-
-  //   return resultPage;
-  // }
-
-  async findTodoList(userId: number, page): Promise<Todo[]> {
-    const findList: Todo[] = await this.todoModel.findAll({
+    const findLists: Todo[] = await this.todoModel.findAll({
       where: { userId },
+      limit: page.getLimit(),
+      offset: page.getOffset(),
     });
 
-    return findList;
+    const resultPage = new Page(page.pageSize, totalCount, findLists);
+
+    return resultPage;
   }
 
   async createTodo(userId: number, todoData: CreateTodoDTO): Promise<Todo> {
