@@ -7,6 +7,8 @@ import {
   UseGuards,
   UnauthorizedException,
   Header,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { AuthService } from 'src/services/auth.services';
 import { Request, Response } from 'express';
@@ -109,12 +111,14 @@ export class AuthController {
   async refresh(@Req() req: Request) {
     try {
       const refreshId = req['refreshId'];
-      console.log(refreshId);
       const accessToken = await this.authService.generateAccessToken(refreshId);
 
       return accessToken;
     } catch (err) {
-      throw new UnauthorizedException();
+      throw new HttpException(
+        'error while refreshing access token',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 }
