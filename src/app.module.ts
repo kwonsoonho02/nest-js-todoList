@@ -11,6 +11,8 @@ import { TodoModule } from './module/todos.module';
 import { AuthGuard } from './guard/auth.guard';
 import { Todo } from './entities/todos.entities';
 import { RefreshGuard } from './guard/refresh.guard';
+import { APP_FILTER } from '@nestjs/core';
+import { HttpExceptionFilter } from './filter/httpExceptionFilter';
 
 @Module({
   imports: [
@@ -48,6 +50,10 @@ import { RefreshGuard } from './guard/refresh.guard';
     AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtService],
+  providers: [
+    { provide: APP_FILTER, useClass: HttpExceptionFilter },
+    AppService,
+    JwtService,
+  ],
 })
 export class AppModule {}
