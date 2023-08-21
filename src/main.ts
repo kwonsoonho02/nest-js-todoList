@@ -12,8 +12,8 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
 
   const config = new DocumentBuilder()
-    .setTitle('Your API Title')
-    .setDescription('API description')
+    .setTitle('Todo API')
+    .setDescription('Nest js를 활용해 todoList 개발을 위한 API')
     .setVersion('1.0')
     .addTag('your-tag')
     .build();
