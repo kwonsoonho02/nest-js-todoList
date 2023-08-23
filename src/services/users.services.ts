@@ -10,12 +10,10 @@ import { hash } from 'bcrypt';
 export class UserService {
   constructor(@InjectModel(User) private userModel: typeof User) {}
 
-  async findUser(): Promise<User[]> {
-    const user = await this.userModel.findAll();
-
-    // const user = await this.userModel.findAll({
-    //   where: { id: userData.id },
-    // });
+  async findUser(userData: CreateUserDTO): Promise<User> {
+    const user = await this.userModel.findOne({
+      where: { email: userData.email },
+    });
     return user;
   }
 

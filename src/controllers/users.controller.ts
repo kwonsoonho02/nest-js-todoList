@@ -14,10 +14,9 @@ import {
 } from '@nestjs/common';
 import { User } from 'src/entities/users.entities';
 import { UserService } from 'src/services/users.services';
-import { Request, Response } from 'express';
+import { Request } from 'express';
 import { AuthGuard } from 'src/guard/auth.guard';
 import { CreateUserDTO, UpdateUserDTO } from 'src/dto/users.dto';
-import { RefreshGuard } from 'src/guard/refresh.guard';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { HttpExceptionFilter } from 'src/filter/httpExceptionFilter';
 
@@ -29,8 +28,8 @@ export class UserController {
 
   @ApiOperation({ summary: 'Get all users' })
   @Get()
-  async findAllUserList() {
-    const findUsers: User[] = await this.userService.findUser();
+  async findAllUserList(@Body() userData: CreateUserDTO) {
+    const findUsers: User = await this.userService.findUser(userData);
 
     if (!findUsers) {
       throw new HttpException(
@@ -60,9 +59,9 @@ export class UserController {
   }
 
   @ApiOperation({ summary: 'Delete user' })
-  @UseGuards(AuthGuard, RefreshGuard)
+  @UseGuards(AuthGuard)
   @Delete()
-  async deleteUser(@Req() req: Request, @Res() res: Response) {
+  async deleteUser(@Req() req: Request) {
     const userId: number = req['user'].id;
     const deleteUser: number = await this.userService.deleteUser(userId);
 

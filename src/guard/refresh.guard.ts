@@ -30,8 +30,7 @@ export class RefreshGuard implements CanActivate {
         refreshId,
       );
       req['refreshId'] = refreshId;
-    } catch (error) {
-      console.error('RefreshGuard Error:', error.message);
+    } catch {
       throw new UnauthorizedException('Unauthorized');
     }
     return true;
